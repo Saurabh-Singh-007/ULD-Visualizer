@@ -47,11 +47,12 @@ The next N lines (where N is the number of ULDs) contain the dimensions of each 
 
 ### 3. Total Number of Packages, ULDs, and Priority ULDs:
 The line after the ULD dimensions contains three integers:
-- Total number of packages in the system.
-- Total number of ULDs.
-- Number of priority ULDs (used for validation).
-
+- Total cost (an integer value)
+- Total number of packages packed in all ULDs
+- Number of ULDs with Priority Packages
+  
 ### 4. Package Data:
+Next line contains the number of packages .
 The subsequent lines contain data about each package in the following format:
 
 ```txt
