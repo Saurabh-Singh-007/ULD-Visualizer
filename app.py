@@ -132,7 +132,7 @@ def visualize_packing(packages, uld_dimensions):
                 yaxis=dict(range=[0, dimensions[1]], title='Y'),
                 zaxis=dict(range=[0, dimensions[2]], title='Z')
             ),
-            title=f"ULD {uld_id} Package Visualization",
+            title=f"{uld_id} Package Visualization",
             margin=dict(l=0, r=0, t=40, b=0)
         )
         
