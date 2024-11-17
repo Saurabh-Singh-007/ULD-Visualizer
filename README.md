@@ -17,7 +17,7 @@ The application parses a text file with specific format requirements and visuali
 - Information on the number of packages, their dimensions, priority, and ULD assignments.
 - A 3D visualization of each ULD and the packages inside it.
 
-# ULD Packing Data File Format
+## ULD Packing Data File Format
 
 This document describes the structure and contents of the packing data file used in the ULD packing visualization and analysis app.
 
@@ -54,3 +54,48 @@ Where:
 - **Priority Package (P)**: Packages marked with a priority (`P`) will be visually highlighted in the app.
 - **Unassigned Package (NONE)**: Packages that are not assigned to any ULD are marked with `NONE`. These are considered unassigned and are not displayed in the 3D visualization, but they will be listed as unassigned economy packages.
 - **Package Dimensions**: The dimensions of a package are automatically derived from the coordinates provided in the package data. The dimensions represent the size of the package's box in 3D space.
+
+# How to Run  
+- Requirements 
+```bash
+pip install streamlit matplotlib numpy 
+```
+- Clone this repository to your local machine. 
+- Save you data in the format deescribed above as as `.txt` file. 
+- Run the streamlit app .
+```bash 
+streamlit run app.py
+```
+- Open the app and upload the `.txt` file.
+
+# Interacting with the App
+
+## 3D Visualization
+- Click and drag to rotate the view of the ULD and packages.
+
+## Package Information
+- Hover over each package to see its ID.
+
+## Warnings
+- Any overlap between packages will be displayed as a warning.
+- Unassigned economy packages will be listed separately.
+
+# Example Output
+Upon successful execution, the app will display:
+- A 3D visualization of the ULDs and packages.
+- Details on the number of packages, ULD dimensions, total volume, and any overlap warnings.
+- A list of unassigned economy packages if applicable.
+
+# Troubleshooting
+
+## File Format Issues
+- Ensure that the file follows the correct structure, with each section properly formatted.
+
+## Missing Dependencies
+- If you encounter errors related to missing packages, make sure to install the required dependencies: 
+    - `streamlit`
+    - `matplotlib`
+    - `numpy`
+
+## Package Overlap
+- The application will notify you if there are any overlapping packages within a ULD.
