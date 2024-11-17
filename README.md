@@ -72,20 +72,20 @@ Here is a sample `packing_data.txt` file structure that can be uploaded for anal
 
 ```txt
 3
-100, 200, 300
-150, 250, 350
-200, 300, 400
-500, 5, 1
-PKG1, ULD1, 0, 0, 0, 50, 50, 50, P
-PKG2, ULD1, 50, 50, 0, 100, 100, 50, E
-PKG3, ULD1, 100, 100, 0, 150, 150, 50, P
-PKG4, ULD2, 0, 0, 0, 50, 50, 50, E
-PKG5, ULD2, 50, 50, 0, 100, 100, 50, P
-PKG6, ULD2, 100, 100, 0, 150, 150, 50, E
-PKG7, ULD3, 0, 0, 0, 50, 50, 50, P
-PKG8, ULD3, 50, 50, 0, 100, 100, 50, E
-PKG9, ULD3, 100, 100, 0, 150, 150, 50, P
-PKG10, ULD3, 150, 150, 0, 200, 200, 50, E
+100,200,300
+150,250,350
+200,300,400
+500,5,1
+PKG1,ULD1,0,0,0,50,50,50P
+PKG2,ULD1,50,50,0,100,100,50,E
+PKG3,ULD1,100,100,0,150,150,50,P
+PKG4,ULD2,0,0,0,50,50,50,E
+PKG5,ULD2,50,50,0,100,100,50,P
+PKG6,ULD2,100,100,0,150,150,50,E
+PKG7,ULD3,0,0,0,50,50,50,P
+PKG8,ULD3,50,50,0,100,100,50,E
+PKG9,ULD3,100,100,0,150,150,50,P
+PKG10,ULD3,150,150,0,200,200,50,E
 ```
 ### Notes:
 - **Priority Package (P)**: Packages marked with a priority (`P`) will be visually highlighted in the app.
