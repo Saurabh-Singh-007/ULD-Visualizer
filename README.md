@@ -9,7 +9,7 @@ This Streamlit application allows users to visualize the packing of packages in 
 pip install streamlit matplotlib numpy 
 ```
 - Clone this repository to your local machine. 
-- Save you data in the format deescribed above as as `.txt` file. 
+- Save you data in the format deescribed below as as `.txt` file. 
 - Run the streamlit app .
 ```bash 
 streamlit run app.py
