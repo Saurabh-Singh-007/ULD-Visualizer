@@ -53,10 +53,11 @@ The line after the ULD dimensions contains three integers:
   
 ### 4. Package Data:
 Next line contains the number of packages .
+
 The subsequent lines contain data about each package in the following format:
 
 ```txt
-<Package ID>,<ULD ID>,<X0>,<Y0>,<Z0>,<X1>,<Y1>,<Z1>,<Priority>
+<Package ID>,<ULD ID>,<X0>,<Y0>,<Z0>,<X1>,<Y1>,<Z1>,<Priority> (All separated by commas and NO SPACES)
 ```
 
 Where:
@@ -77,6 +78,7 @@ Here is a sample `packing_data.txt` file structure that can be uploaded for anal
 150,250,350
 200,300,400
 500,5,1
+10
 PKG1,ULD1,0,0,0,50,50,50P
 PKG2,ULD1,50,50,0,100,100,50,E
 PKG3,ULD1,100,100,0,150,150,50,P
