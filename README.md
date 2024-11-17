@@ -2,6 +2,21 @@
 
 This Streamlit application allows users to visualize the packing of packages in ULDs (Unit Load Devices) and perform analysis on their arrangement. It reads data from a file, displays 3D visualizations of ULDs with their packages, and provides insights into any overlaps or unassigned packages.
 
+
+# How to Run  
+- Requirements 
+```bash
+pip install streamlit matplotlib numpy 
+```
+- Clone this repository to your local machine. 
+- Save you data in the format deescribed above as as `.txt` file. 
+- Run the streamlit app .
+```bash 
+streamlit run app.py
+```
+- Open the app and upload the `.txt` file.
+
+
 ## Features
 
 - **3D Visualization**: Displays ULDs and their packed packages in a 3D space.
@@ -55,18 +70,6 @@ Where:
 - **Unassigned Package (NONE)**: Packages that are not assigned to any ULD are marked with `NONE`. These are considered unassigned and are not displayed in the 3D visualization, but they will be listed as unassigned economy packages.
 - **Package Dimensions**: The dimensions of a package are automatically derived from the coordinates provided in the package data. The dimensions represent the size of the package's box in 3D space.
 
-# How to Run  
-- Requirements 
-```bash
-pip install streamlit matplotlib numpy 
-```
-- Clone this repository to your local machine. 
-- Save you data in the format deescribed above as as `.txt` file. 
-- Run the streamlit app .
-```bash 
-streamlit run app.py
-```
-- Open the app and upload the `.txt` file.
 
 ## Interacting with the App
 
