@@ -68,30 +68,30 @@ streamlit run app.py
 ```
 - Open the app and upload the `.txt` file.
 
-# Interacting with the App
+## Interacting with the App
 
-## 3D Visualization
+### 3D Visualization
 - Click and drag to rotate the view of the ULD and packages.
 
-## Package Information
+### Package Information
 - Hover over each package to see its ID.
 
-## Warnings
+### Warnings
 - Any overlap between packages will be displayed as a warning.
 - Unassigned economy packages will be listed separately.
 
-# Example Output
+### Output
 Upon successful execution, the app will display:
 - A 3D visualization of the ULDs and packages.
 - Details on the number of packages, ULD dimensions, total volume, and any overlap warnings.
 - A list of unassigned economy packages if applicable.
 
-# Troubleshooting
+## Troubleshooting
 
-## File Format Issues
+### File Format Issues
 - Ensure that the file follows the correct structure, with each section properly formatted.
 
-## Missing Dependencies
+### Missing Dependencies
 - If you encounter errors related to missing packages, make sure to install the required dependencies: 
     - `streamlit`
     - `matplotlib`
