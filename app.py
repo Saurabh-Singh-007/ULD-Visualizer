@@ -148,7 +148,7 @@ def analyze_packing(packages, uld_dimensions):
         uld_index = int(uld_id[3:]) - 1  # Extract ULD index (e.g., ULD1 -> 0)
         uld_dim = uld_dimensions[uld_index]  # Get actual ULD dimensions
         
-        st.write(f"#### ULD {uld_id}")
+        st.write(f"#### {uld_id}")
         st.write(f"- Number of packages: {len(uld_packages)}")
         st.write(f"- ULD Dimensions: {uld_dim}")
         st.write(f"- Total volume: {np.prod(uld_dim):.2f} cubic units")
