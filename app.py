@@ -52,9 +52,11 @@ def check_overlap(packages):
                 overlap_warnings.append(f"Overlap detected between {p1['package_id']} and {p2['package_id']}.")
     
     return overlap_warnings
+import plotly.colors as pc  # For color palettes
 
 def visualize_packing(packages, uld_dimensions):
     uld_ids = sorted(set(package['uld_id'] for package in packages if package['uld_id'] != 'NONE'))
+    color_palette = pc.qualitative.Set3  # A qualitative palette with diverse colors
     
     for uld_id in uld_ids:
         fig = go.Figure()
@@ -65,62 +67,74 @@ def visualize_packing(packages, uld_dimensions):
         # Get dimensions of the ULD
         uld_index = int(uld_id[3:]) - 1  # Extract ULD index (e.g., ULD1 -> 0)
         dimensions = uld_dimensions[uld_index]
+        uld_color = "rgba(200,200,200,0.2)"  # Light gray with transparency
         
-        for package in uld_packages:
+        # Add ULD boundary as a transparent cuboid
+        x0, y0, z0 = 0, 0, 0
+        x1, y1, z1 = dimensions
+        uld_vertices = np.array([
+            [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0],  # Bottom face
+            [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]   # Top face
+        ])
+        uld_faces = np.array([
+            [0, 1, 2], [0, 2, 3],  # Bottom face
+            [4, 5, 6], [4, 6, 7],  # Top face
+            [0, 1, 5], [0, 5, 4],  # Front face
+            [2, 3, 7], [2, 7, 6],  # Back face
+            [1, 2, 6], [1, 6, 5],  # Right face
+            [0, 3, 7], [0, 7, 4]   # Left face
+        ])
+        fig.add_trace(go.Mesh3d(
+            x=uld_vertices[:, 0],
+            y=uld_vertices[:, 1],
+            z=uld_vertices[:, 2],
+            i=uld_faces[:, 0],
+            j=uld_faces[:, 1],
+            k=uld_faces[:, 2],
+            color=uld_color,
+            opacity=0.2,
+            hoverinfo='skip',
+            name=f"{uld_id} Boundary"
+        ))
+        
+        # Add packages inside the ULD
+        for i, package in enumerate(uld_packages):
             coords = package['coords']
-            priority = package['priority']
             package_id = package['package_id']
+            priority = package['priority']
             
-            # Create vertices for the box
+            # Extract coordinates
             x0, y0, z0, x1, y1, z1 = coords
             vertices = np.array([
-                [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0],
-                [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]
+                [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0],  # Bottom face
+                [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]   # Top face
             ])
             
-            # Define the edges of the box
-            edges = [
-                (0, 1), (1, 2), (2, 3), (3, 0),  # Bottom face
-                (4, 5), (5, 6), (6, 7), (7, 4),  # Top face
-                (0, 4), (1, 5), (2, 6), (3, 7)   # Vertical edges
-            ]
+            # Define triangular faces for Mesh3d
+            faces = np.array([
+                [0, 1, 2], [0, 2, 3],  # Bottom face
+                [4, 5, 6], [4, 6, 7],  # Top face
+                [0, 1, 5], [0, 5, 4],  # Front face
+                [2, 3, 7], [2, 7, 6],  # Back face
+                [1, 2, 6], [1, 6, 5],  # Right face
+                [0, 3, 7], [0, 7, 4]   # Left face
+            ])
             
-            # Prepare coordinates for the edges
-            x_edges = []
-            y_edges = []
-            z_edges = []
-            for edge in edges:
-                for vertex in edge:
-                    x_edges.append(vertices[vertex][0])
-                    y_edges.append(vertices[vertex][1])
-                    z_edges.append(vertices[vertex][2])
-                x_edges.append(None)  # Break in the line for Plotly
-                y_edges.append(None)
-                z_edges.append(None)
+            # Assign a unique color for the package
+            color_index = i % len(color_palette)
+            box_color = color_palette[color_index]
             
-            # Assign color based on priority
-            box_color = 'red' if priority == 'P' else 'blue'
-            
-            # Add the package as a scatter3d trace
-            fig.add_trace(go.Scatter3d(
-                x=x_edges,
-                y=y_edges,
-                z=z_edges,
-                mode='lines',
-                line=dict(color=box_color, width=5 if priority == 'P' else 2),
-                hoverinfo='skip'
-            ))
-            
-            # Add the package label as a scatter3d trace
-            center = vertices.mean(axis=0)
-            fig.add_trace(go.Scatter3d(
-                x=[center[0]],
-                y=[center[1]],
-                z=[center[2]],
-                mode='markers+text',
-                text=[package_id],
-                textposition='top center',
-                marker=dict(size=3, color=box_color),
+            # Add the package as a solid block (Mesh3d trace)
+            fig.add_trace(go.Mesh3d(
+                x=vertices[:, 0],
+                y=vertices[:, 1],
+                z=vertices[:, 2],
+                i=faces[:, 0],
+                j=faces[:, 1],
+                k=faces[:, 2],
+                color=box_color,
+                opacity=1.0,
+                name=package_id,
                 hovertext=f"Package ID: {package_id}<br>Priority: {'Yes' if priority == 'P' else 'No'}",
                 hoverinfo='text'
             ))
@@ -138,6 +152,8 @@ def visualize_packing(packages, uld_dimensions):
         
         # Display the figure
         st.plotly_chart(fig)
+
+
 
 def analyze_packing(packages, uld_dimensions):
     st.write("### Packing Analysis")
