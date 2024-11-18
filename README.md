@@ -16,6 +16,7 @@ streamlit run app.py
 ```
 - Open the app and upload the `.txt` file.
 
+![alt text](image.png)
 
 ## Features
 
