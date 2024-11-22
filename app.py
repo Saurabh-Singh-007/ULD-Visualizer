@@ -5,16 +5,13 @@ import numpy as np
 def read_packing_data_v2(file_content):
     lines = file_content.splitlines()
     
-    # Read ULD count and dimensions
     uld_count = int(lines[0].strip())
     uld_dimensions = []
     for i in range(1, 1 + uld_count):
         uld_dimensions.append(list(map(int, lines[i].strip().split(','))))
     
-    # Read cost, total packages, and priority ULDs
     total_cost, total_packages, priority_ulds = map(int, lines[1 + uld_count].strip().split(','))
     
-    # Read package data
     package_count = int(lines[2 + uld_count].strip())
     packages = []
     for i in range(3 + uld_count, 3 + uld_count + package_count):
@@ -28,7 +25,6 @@ def read_packing_data_v2(file_content):
             'priority': priority
         })
         
-        # Check if a priority package is unassigned
         if priority == 'P' and uld_id == 'NONE':
             raise ValueError(f"Priority package {package_id} is not assigned to a ULD.")
     
@@ -52,106 +48,7 @@ def check_overlap(packages):
                 overlap_warnings.append(f"Overlap detected between {p1['package_id']} and {p2['package_id']}.")
     
     return overlap_warnings
-import plotly.colors as pc  # For color palettes
-
-def visualize_packing(packages, uld_dimensions):
-    uld_ids = sorted(set(package['uld_id'] for package in packages if package['uld_id'] != 'NONE'))
-    color_palette = pc.qualitative.Set3  # A qualitative palette with diverse colors
-    
-    for uld_id in uld_ids:
-        fig = go.Figure()
-        
-        # Filter packages for this ULD
-        uld_packages = [p for p in packages if p['uld_id'] == uld_id]
-        
-        # Get dimensions of the ULD
-        uld_index = int(uld_id[3:]) - 1  # Extract ULD index (e.g., ULD1 -> 0)
-        dimensions = uld_dimensions[uld_index]
-        uld_color = "rgba(200,200,200,0.2)"  # Light gray with transparency
-        
-        # Add ULD boundary as a transparent cuboid
-        x0, y0, z0 = 0, 0, 0
-        x1, y1, z1 = dimensions
-        uld_vertices = np.array([
-            [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0],  # Bottom face
-            [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]   # Top face
-        ])
-        uld_faces = np.array([
-            [0, 1, 2], [0, 2, 3],  # Bottom face
-            [4, 5, 6], [4, 6, 7],  # Top face
-            [0, 1, 5], [0, 5, 4],  # Front face
-            [2, 3, 7], [2, 7, 6],  # Back face
-            [1, 2, 6], [1, 6, 5],  # Right face
-            [0, 3, 7], [0, 7, 4]   # Left face
-        ])
-        fig.add_trace(go.Mesh3d(
-            x=uld_vertices[:, 0],
-            y=uld_vertices[:, 1],
-            z=uld_vertices[:, 2],
-            i=uld_faces[:, 0],
-            j=uld_faces[:, 1],
-            k=uld_faces[:, 2],
-            color=uld_color,
-            opacity=0.2,
-            hoverinfo='skip',
-            name=f"{uld_id} Boundary"
-        ))
-        
-        # Add packages inside the ULD
-        for i, package in enumerate(uld_packages):
-            coords = package['coords']
-            package_id = package['package_id']
-            priority = package['priority']
-            
-            # Extract coordinates
-            x0, y0, z0, x1, y1, z1 = coords
-            vertices = np.array([
-                [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0],  # Bottom face
-                [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]   # Top face
-            ])
-            
-            # Define triangular faces for Mesh3d
-            faces = np.array([
-                [0, 1, 2], [0, 2, 3],  # Bottom face
-                [4, 5, 6], [4, 6, 7],  # Top face
-                [0, 1, 5], [0, 5, 4],  # Front face
-                [2, 3, 7], [2, 7, 6],  # Back face
-                [1, 2, 6], [1, 6, 5],  # Right face
-                [0, 3, 7], [0, 7, 4]   # Left face
-            ])
-            
-            # Assign a unique color for the package
-            color_index = i % len(color_palette)
-            box_color = color_palette[color_index]
-            
-            # Add the package as a solid block (Mesh3d trace)
-            fig.add_trace(go.Mesh3d(
-                x=vertices[:, 0],
-                y=vertices[:, 1],
-                z=vertices[:, 2],
-                i=faces[:, 0],
-                j=faces[:, 1],
-                k=faces[:, 2],
-                color=box_color,
-                opacity=1.0,
-                name=package_id,
-                hovertext=f"Package ID: {package_id}<br>Priority: {'Yes' if priority == 'P' else 'No'}",
-                hoverinfo='text'
-            ))
-        
-        # Set axis limits and labels
-        fig.update_layout(
-            scene=dict(
-                xaxis=dict(range=[0, dimensions[0]], title='X'),
-                yaxis=dict(range=[0, dimensions[1]], title='Y'),
-                zaxis=dict(range=[0, dimensions[2]], title='Z')
-            ),
-            title=f"{uld_id} Package Visualization",
-            margin=dict(l=0, r=0, t=40, b=0)
-        )
-        
-        # Display the figure
-        st.plotly_chart(fig)
+import plotly.colors as pc  
 
 
 
@@ -161,15 +58,14 @@ def analyze_packing(packages, uld_dimensions):
     
     for uld_id in uld_ids:
         uld_packages = [p for p in packages if p['uld_id'] == uld_id]
-        uld_index = int(uld_id[3:]) - 1  # Extract ULD index (e.g., ULD1 -> 0)
-        uld_dim = uld_dimensions[uld_index]  # Get actual ULD dimensions
+        uld_index = int(uld_id[3:]) - 1  
+        uld_dim = uld_dimensions[uld_index]  
         
         st.write(f"#### {uld_id}")
         st.write(f"- Number of packages: {len(uld_packages)}")
         st.write(f"- ULD Dimensions: {uld_dim}")
         st.write(f"- Total volume: {np.prod(uld_dim):.2f} cubic units")
         
-        # Check for overlaps
         overlaps = check_overlap(uld_packages)
         if overlaps:
             st.warning(f"Overlaps detected in {uld_id}:")
@@ -178,7 +74,6 @@ def analyze_packing(packages, uld_dimensions):
         else:
             st.success(f"No overlaps detected in {uld_id}.")
         
-        # Display package details and highlight priority packages
         st.write("- **Packages:**")
         for package in uld_packages:
             coords = package['coords']
@@ -187,22 +82,147 @@ def analyze_packing(packages, uld_dimensions):
             priority_label = " (Priority)" if priority == 'P' else ""
             st.write(f"  - {package['package_id']}: Size {size}{priority_label}")
 
+            
+def calculate_layers(packages):
+    """
+    Calculate the layer number for each package based on support.
+    Layer 1: Packages directly on the ULD floor.
+    Subsequent layers: Packages supported by the layer below.
+    """
+    layer_map = {}  # Maps package_id to its layer
+    packages_sorted = sorted(packages, key=lambda p: p['coords'][2])  # Sort by z0 (bottom height)
 
-# Streamlit App
+    for package in packages_sorted:
+        x0, y0, z0, x1, y1, z1 = package['coords']
+        # Check for packages below this one to determine the layer
+        supported_layer = 0
+        for other in packages_sorted:
+            ox0, oy0, oz0, ox1, oy1, oz1 = other['coords']
+            # Check if 'other' is directly below 'package'
+            if oz1 == z0 and not (ox1 <= x0 or ox0 >= x1 or oy1 <= y0 or oy0 >= y1):  # Overlapping base
+                supported_layer = max(supported_layer, layer_map[other['package_id']])
+
+        # Layer is the maximum supported layer + 1
+        layer_map[package['package_id']] = supported_layer + 1
+
+    return layer_map
+
+
+
+def visualize_all_layers(packages, uld_dimensions, selected_uld=None, selected_layer=None, layer_map=None):
+    """
+    Visualize all packages for all ULDs or a specific ULD and optionally highlight a specific layer.
+    """
+    fig = go.Figure()
+
+    if selected_uld:
+        uld_packages = [p for p in packages if p['uld_id'] == selected_uld]
+        uld_ids = [selected_uld]
+    else:
+        uld_packages = packages
+        uld_ids = sorted(set(p['uld_id'] for p in packages if p['uld_id'] != 'NONE'))
+
+    for uld_id in uld_ids:
+        uld_index = int(uld_id[3:]) - 1  
+        dimensions = uld_dimensions[uld_index]
+        uld_color = "rgba(200,200,200,0.2)" 
+
+        x0, y0, z0 = 0, 0, 0
+        x1, y1, z1 = dimensions
+        fig.add_trace(go.Mesh3d(
+            x=[x0, x1, x1, x0, x0, x1, x1, x0],
+            y=[y0, y0, y1, y1, y0, y0, y1, y1],
+            z=[z0, z0, z0, z0, z1, z1, z1, z1],
+            color=uld_color,
+            opacity=0.2,
+            hoverinfo='skip',
+            name=f"{uld_id} Boundary"
+        ))
+
+    color_palette = pc.qualitative.Set3  
+    for i, package in enumerate(uld_packages):
+        coords = package['coords']
+        package_id = package['package_id']
+        priority = package['priority']
+        layer = layer_map[package_id] if layer_map else None
+
+        x0, y0, z0, x1, y1, z1 = coords
+        vertices = np.array([
+            [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0],  
+            [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]   
+        ])
+        faces = np.array([
+            [0, 1, 2], [0, 2, 3],  
+            [4, 5, 6], [4, 6, 7],  
+            [0, 1, 5], [0, 5, 4], 
+            [2, 3, 7], [2, 7, 6],  
+            [1, 2, 6], [1, 6, 5],  
+            [0, 3, 7], [0, 7, 4] 
+        ])
+
+        if selected_layer is not None and layer == selected_layer:
+            box_color = pc.qualitative.Plotly[i % len(pc.qualitative.Plotly)]
+            box_opacity = 1.0  # Fully opaque for highlighted packages
+        elif selected_layer is None:
+            box_color = pc.qualitative.Plotly[i % len(pc.qualitative.Plotly)]
+            box_opacity = 0.7  # Uniform visibility for all packages
+        else:
+            box_color = "rgba(200,200,200,0.5)"  # Gray for non-highlighted packages
+            box_opacity = 0.5  # Semi-transparent for non-highlighted packages
+
+        fig.add_trace(go.Mesh3d(
+            x=vertices[:, 0],
+            y=vertices[:, 1],
+            z=vertices[:, 2],
+            i=faces[:, 0],
+            j=faces[:, 1],
+            k=faces[:, 2],
+            color=box_color,
+            opacity=box_opacity,
+            name=f"{package_id} (Layer {layer})" if layer_map else package_id,
+            hovertext=f"Package ID: {package_id}<br>Priority: {'Yes' if priority == 'P' else 'No'}<br>Layer: {layer}" if layer_map else f"Package ID: {package_id}<br>Priority: {'Yes' if priority == 'P' else 'No'}",
+            hoverinfo='text'
+        ))
+
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(title='X'),
+            yaxis=dict(title='Y'),
+            zaxis=dict(title='Z')
+        ),
+        title="ULD Visualization" if selected_uld is None else f"{selected_uld} Visualization",
+        margin=dict(l=0, r=0, t=40, b=0)
+    )
+
+    st.plotly_chart(fig)
+
+
 st.title("ULD Packing Visualization and Analysis")
 
-# File uploader
 uploaded_file = st.file_uploader("Upload a Packing Data File", type="txt")
 
 if uploaded_file is not None:
-    # Read and parse the file
     file_content = uploaded_file.getvalue().decode("utf-8")
     packages, uld_dimensions = read_packing_data_v2(file_content)
-    
-    # Analyze the packing arrangement
-    analyze_packing(packages, uld_dimensions)
-    
-    # Visualize the ULDs
-    visualize_packing(packages, uld_dimensions)
+
+    layer_map = calculate_layers(packages)
+
+    uld_ids = sorted(set(p['uld_id'] for p in packages if p['uld_id'] != 'NONE'))
+    selected_uld = st.selectbox("Select ULD", uld_ids)
+
+    if selected_uld:
+        available_layers = ["None Highlighted"] + sorted(set(layer_map[p['package_id']] for p in packages if p['uld_id'] == selected_uld))
+    else:
+        available_layers = ["None Highlighted"] + sorted(set(layer_map[p['package_id']] for p in packages))
+
+    selected_layer = st.selectbox("Select Layer to Highlight", available_layers)
+
+    if selected_layer == "None Highlighted":
+        selected_layer = None
+    else:
+        selected_layer = int(selected_layer)
+
+    visualize_all_layers(packages, uld_dimensions, selected_uld, selected_layer, layer_map)
 else:
     st.write("Please upload a packing data file to analyze and visualize.")
+
